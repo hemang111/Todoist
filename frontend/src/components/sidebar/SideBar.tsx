@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import './sidebar.css'
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
-import SideBarTasks from "../sidebarTasks/SideBarTasksCol";
+import SideBarTasks from "./sidebarTasks/SideBarTasksCol";
 
 gsap.registerPlugin(useGSAP);
 
