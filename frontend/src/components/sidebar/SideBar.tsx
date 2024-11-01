@@ -10,12 +10,18 @@ const SideBar = () => {
 
     const [width, setWidth] = useState(300);
     const [isResizing, setIsResizing] = useState(false);
-    const [sideBarCols, setSideBarCols] = useState([{ title: 'My Projects', id: 1, hashes: [{ title: 'My Works', id: 1 }, { title: 'Education', id: 2 }, { title: 'Home', id: 3 }] }
-        , { title: 'Ninja', id: 2, hashes: [{ title: 'My Works 2', id: 1 }, { title: 'Education 2', id: 2 }, { title: 'Home 2', id: 3 }] }]);
+    const [sideBarCols, setSideBarCols] = useState([{ title: 'My Projects', id: 1, hashes: [{ title: 'My Works', id: 1 ,isfav:true }, { title: 'Education', id: 2,isfav:false }, { title: 'Home', id: 3 , isfav: false }] }
+        , { title: 'Ninja', id: 2, hashes: [{ title: 'My Works 2', id: 1,isfav:false  }, { title: 'Education 2', id: 2,isfav:false  }, { title: 'Home 2', id: 3,isfav:false }] }]);
 
     const [active, setActive] = useState<number | null>(null);
     const [activeCol, setActiveCol] = useState<number | null>(null);
-    const onDrop = (targetColumn: number, targetId: number) => {
+    const onDrop = (targetColumn: number, targetId: number,isfav:boolean) => {
+        if(isfav){
+             console.log("Its fav");
+             setActive(null);
+             setActiveCol(null);
+       }
+       else{
         console.log(`${active} is going to be dropped from ${activeCol} in ${targetColumn} at the position ${targetId}`);
         document.body.style.cursor = ' default';
         if (active === null || active === undefined) {
@@ -40,7 +46,6 @@ const SideBar = () => {
 
         const targetCol = updatedCols[targetColIndex];
         let targetPosition = targetCol.hashes.findIndex(task => task.id === targetId);
-
         if (targetId === 0) {
             targetPosition = 0;
         }
@@ -61,6 +66,7 @@ const SideBar = () => {
 
         setActive(null);
         setActiveCol(null);
+       }
     };
 
 

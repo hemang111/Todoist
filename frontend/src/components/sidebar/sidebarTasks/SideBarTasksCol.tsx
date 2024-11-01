@@ -6,12 +6,13 @@ import { motion } from 'framer-motion';
 interface hash {
     id: number;
     title: string;
+    isfav:boolean;
 }
 
 interface SideBarTasksProps {
     sideBarCol: { id: number; title: string; hashes: hash[] };
     setActive: (id: number) => void;
-    onDrop: (colId: number, hashId: number) => void;
+    onDrop: (colId: number, hashId: number,isfav:boolean) => void;
     setActiveCol: (colId: number) => void;
 }
 
@@ -43,12 +44,23 @@ const SideBarTasks: React.FC<SideBarTasksProps> = ({ sideBarCol, setActive, onDr
                 </div>
             </motion.div>
             <div className="user-body" ref={userBody} onDragOver={handleDragOver}>
-                <DropIndicator onDrop={()=>onDrop(sideBarCol.id,0)}/>
+                <DropIndicator onDrop={()=>{
+                    console.log(sideBarCol.hashes[0].isfav);
+                    onDrop(sideBarCol.id,0,sideBarCol.hashes[0].isfav)}}/>
                     {
                         sideBarCol.hashes.map((hash: hash) => (
                             <React.Fragment key={hash.id}>
                             <SideBarTask title={hash.title} id={hash.id} column={sideBarCol.id} setActive={setActive} setActiveCol={setActiveCol}/> 
-                            <DropIndicator onDrop={()=>onDrop(sideBarCol.id,hash.id+1)}/>
+                            <DropIndicator onDrop={()=>{
+                                if(sideBarCol.hashes[hash.id]){
+                                onDrop(sideBarCol.id,hash.id+1,sideBarCol.hashes[hash.id].isfav)}
+                            else{
+                                onDrop(sideBarCol.id,hash.id+1,false)
+                            }
+                            }}/>
+                            
+                            
+                        
                             </React.Fragment>
                             )
                         )
