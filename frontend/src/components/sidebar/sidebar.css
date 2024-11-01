@@ -1,0 +1,31 @@
+
+.wrapper {
+    height: 100vh;
+    background-color: #FCFAF8;
+    position: relative;
+    user-select: none;
+  }
+
+  .sidebar {
+    height: 100%;
+    background-color: #FCFAF8;
+    overflow: hidden;
+  }
+  
+  .resizer {
+    width: 5px;
+    cursor: col-resize;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+  }
+
+  .resizer:hover {
+    background-color: #e0e0e0;
+  }
+  
+  .resizer:active{
+    background-color: #e0e0e0;
+    cursor: col-resize;
+  }
