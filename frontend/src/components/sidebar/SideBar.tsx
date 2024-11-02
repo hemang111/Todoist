@@ -1,8 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect} from "react";
 import './sidebar.css'
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import SideBarTasks from "./sidebarTasks/SideBarTasksCol";
+import { useSelector } from "react-redux";
+import { RootState } from "../../app/store";
 
 gsap.registerPlugin(useGSAP);
 
@@ -10,59 +12,8 @@ const SideBar = () => {
 
     const [width, setWidth] = useState(300);
     const [isResizing, setIsResizing] = useState(false);
-    const [sideBarCols, setSideBarCols] = useState([{ title: 'My Projects', id: 1, hashes: [{ title: 'My Works', id: 1 }, { title: 'Education', id: 2 }, { title: 'Home', id: 3 }] }
-        , { title: 'Ninja', id: 2, hashes: [{ title: 'My Works 2', id: 1 }, { title: 'Education 2', id: 2 }, { title: 'Home 2', id: 3 }] }]);
-
-    const [active, setActive] = useState<number | null>(null);
-    const [activeCol, setActiveCol] = useState<number | null>(null);
-    const onDrop = (targetColumn: number, targetId: number) => {
-        console.log(`${active} is going to be dropped from ${activeCol} in ${targetColumn} at the position ${targetId}`);
-        document.body.style.cursor = ' default';
-        if (active === null || active === undefined) {
-            return;
-        }
-        if (activeCol === null || activeCol === undefined) {
-            return;
-        }
-        const updatedCols = [...sideBarCols];
-
-        const sourceColIndex = updatedCols.findIndex(col => col.id === activeCol);
-        const targetColIndex = updatedCols.findIndex(col => col.id === targetColumn);
-
-        if (sourceColIndex === -1 || targetColIndex === -1) return;
-
-        const sourceCol = updatedCols[sourceColIndex];
-        const taskIndex = sourceCol.hashes.findIndex(task => task.id === active);
-
-        if (taskIndex === -1) return;
-
-        const [removedTask] = sourceCol.hashes.splice(taskIndex, 1);
-
-        const targetCol = updatedCols[targetColIndex];
-        let targetPosition = targetCol.hashes.findIndex(task => task.id === targetId);
-
-        if (targetId === 0) {
-            targetPosition = 0;
-        }
-
-        if (targetPosition !== -1) {
-            targetCol.hashes.splice(targetPosition, 0, removedTask);
-        } else {
-            targetCol.hashes.push(removedTask);
-        }
-
-        updatedCols.forEach(col => {
-            col.hashes.forEach((task, index) => {
-                task.id = index + 1;
-            });
-        });
-
-        setSideBarCols(updatedCols);
-
-        setActive(null);
-        setActiveCol(null);
-    };
-
+    const [hovered, setHovered] = useState(false);
+    const { sideBarCols } = useSelector((state:RootState) => state.sidebar)
 
     const handleMouseDown = () => {
         setIsResizing(true);
@@ -87,7 +38,6 @@ const SideBar = () => {
         }
     };
 
-
     useEffect(() => {
         document.addEventListener('mousemove', handleMouseMove);
         document.addEventListener('mouseup', handleMouseUp);
@@ -100,7 +50,7 @@ const SideBar = () => {
 
     return (
         <>
-            <div className="wrapper overflow-y-auto" style={{ width: `${width}px` }}>
+            <div className="wrapper overflow-y-auto" style={{ width: `${width}px` }} onMouseEnter={()=>{setHovered(true)}} onMouseLeave={()=>{setHovered(false)}}>
                 <div className="sidebar p-4 flex flex-col">
                     <div className="top flex items-center justify-between mb-3">
                         <div className="left-top flex items-center gap-3 hover:cursor-pointer w-fit p-1 rounded-md hover:bg-[#F2EFED]">
@@ -165,7 +115,7 @@ const SideBar = () => {
                         <div className="user flex flex-col">
                             {
                                 sideBarCols.map((sideBarCol) => (
-                                    <SideBarTasks sideBarCol={sideBarCol} setActive={setActive} setActiveCol={setActiveCol} onDrop={onDrop} />
+                                    <SideBarTasks sideBarCol={sideBarCol} hovered={hovered}/>
                                 ))
                             }
                         </div>
