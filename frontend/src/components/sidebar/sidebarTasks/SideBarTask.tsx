@@ -1,49 +1,47 @@
-import React, { useState, useRef} from 'react';
+import React, { useState, useRef } from 'react';
+import { useDispatch } from 'react-redux';
+import { setActive, setActiveCol } from '../../../features/sidebarSlice';
+import { AppDispatch } from '../../../app/store';
 
 interface SideBarTaskProps {
     title: string;
     id: number;
     column: number;
-    setActive: (active: any) => void;
-    setActiveCol: (activeCol: any) => void;
 }
 
-const SideBarTask = ({ title, id, column, setActive, setActiveCol}: SideBarTaskProps) => {
+const SideBarTask: React.FC<SideBarTaskProps> = ({ title, id, column }) => {
     const [isDragging, setIsDragging] = useState(false);
     const dragImageRef = useRef<HTMLDivElement>(null);
     const originalCardRef = useRef<HTMLDivElement>(null);
+    const dispatch = useDispatch<AppDispatch>();
 
     const handleDragStart = (e: React.DragEvent) => {
-        setActive(id);
-        setActiveCol(column);
+        dispatch(setActive(id));
+        dispatch(setActiveCol(column));
         setIsDragging(true);
-
-        // Hide the default drag image
         e.dataTransfer.setDragImage(new Image(), 0, 0);
-        // Hide the original card after a short delay
+
         const timeoutId = setTimeout(() => {
             if (originalCardRef.current) {
                 originalCardRef.current.style.display = 'none';
             }
         }, 0);
 
-        // Adjust drag image styling for a realistic effect
         if (dragImageRef.current && originalCardRef.current) {
             dragImageRef.current.style.width = `${originalCardRef.current.offsetWidth}px`;
             dragImageRef.current.style.visibility = 'visible';
         }
 
-        // Cleanup timeout on drag end
         return () => clearTimeout(timeoutId);
     };
 
     const handleDragEnd = () => {
-        setActive(null);
-        setActiveCol(null);
+        dispatch(setActive(null));
+        dispatch(setActiveCol(null));
         setIsDragging(false);
-        dragImageRef.current?.classList.remove('curser-grabbing');
+        dragImageRef.current?.classList.remove('cursor-grabbing');
         if (originalCardRef.current) {
-            originalCardRef.current.style.display = 'flex'; // Show original card again
+            originalCardRef.current.style.display = 'flex';
         }
         if (dragImageRef.current) {
             dragImageRef.current.style.visibility = 'hidden';
@@ -51,7 +49,6 @@ const SideBarTask = ({ title, id, column, setActive, setActiveCol}: SideBarTaskP
     };
 
     const handleDrag = (e: React.DragEvent) => {
-        // Follow mouse coordinates during dragging
         if (dragImageRef.current) {
             dragImageRef.current.style.top = `${e.clientY}px`;
             dragImageRef.current.style.left = `${e.clientX}px`;
@@ -61,7 +58,6 @@ const SideBarTask = ({ title, id, column, setActive, setActiveCol}: SideBarTaskP
 
     return (
         <>
-            {/* Custom drag image that follows the cursor */}
             <div
                 ref={dragImageRef}
                 className="drag-image p-1 rounded-md opacity-70 bg-gray-200 pointer-events-none fixed"
@@ -78,7 +74,6 @@ const SideBarTask = ({ title, id, column, setActive, setActiveCol}: SideBarTaskP
                 </div>
             </div>
 
-            {/* Original draggable card */}
             <div
                 ref={originalCardRef}
                 className={`draggedCard flex items-center justify-between p-1 rounded-md hover:cursor-pointer hover:bg-[#F2EFED] ${
