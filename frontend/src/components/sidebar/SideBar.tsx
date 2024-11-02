@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import './sidebar.css'
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
@@ -10,13 +10,35 @@ const SideBar = () => {
 
     const [width, setWidth] = useState(300);
     const [isResizing, setIsResizing] = useState(false);
-    const [sideBarCols, setSideBarCols] = useState([{ title: 'My Projects', id: 1, hashes: [{ title: 'My Works', id: 1 ,isfav:true }, { title: 'Education', id: 2,isfav:false }, { title: 'Home', id: 3 , isfav: false }] }
-        , { title: 'Ninja', id: 2, hashes: [{ title: 'My Works 2', id: 1,isfav:false  }, { title: 'Education 2', id: 2,isfav:false  }, { title: 'Home 2', id: 3,isfav:false }] }]);
+    const [sideBarCols, setSideBarCols] = useState([{ title: 'My Projects', id: 1, hashes: [{ title: 'My Works', id: 0 ,isfav:true }, { title: 'Education', id: 1,isfav:false }, { title: 'Home', id: 2 , isfav: false }] }
+        , { title: 'Ninja', id: 2, hashes: [{ title: 'My Works 2', id: 0,isfav:false  }, { title: 'Education 2', id: 1,isfav:false  }, { title: 'Home 2', id: 2,isfav:false }] }]);
 
     const [active, setActive] = useState<number | null>(null);
     const [activeCol, setActiveCol] = useState<number | null>(null);
-    const onDrop = (targetColumn: number, targetId: number,isfav:boolean) => {
+    const onDrop = useCallback((targetColumn: number, targetId: number,active:number|null,activeCol:number|null) => {
+        console.log(targetId)
+        const updatedCols = [...sideBarCols];
+        const sourceColIndex = updatedCols.findIndex(col => col.id == activeCol);
+        const sourceCol = updatedCols[sourceColIndex];
+        const taskIndex = sourceCol.hashes.findIndex(task => task.id == active);
+        const targetColIndex = sideBarCols.findIndex(col => col.id == targetColumn);
+        const targetCol = sideBarCols[targetColIndex];
+        console.log(targetColIndex)
+
+        let targetPosition = targetCol.hashes.findIndex(task => task.id == targetId);
+        console.log(targetPosition)
+        let isfav = targetCol.hashes[targetPosition].isfav;
+        if(!targetCol.hashes[targetPosition]){
+            
+        }
+
+        console.log(targetCol)
         if(isfav){
+            
+
+             console.log(sourceCol.hashes[taskIndex].title);
+             console.log(targetCol.hashes[targetPosition].title);
+
              console.log("Its fav");
              setActive(null);
              setActiveCol(null);
@@ -55,10 +77,12 @@ const SideBar = () => {
         } else {
             targetCol.hashes.push(removedTask);
         }
+        console.log(sourceCol.hashes[taskIndex].title);
+        console.log(targetCol.hashes[targetPosition].title);
 
         updatedCols.forEach(col => {
             col.hashes.forEach((task, index) => {
-                task.id = index + 1;
+                task.id = index;
             });
         });
 
@@ -67,7 +91,8 @@ const SideBar = () => {
         setActive(null);
         setActiveCol(null);
        }
-    };
+       console.log(sideBarCols);
+    },[]);
 
 
     const handleMouseDown = () => {
@@ -171,7 +196,7 @@ const SideBar = () => {
                         <div className="user flex flex-col">
                             {
                                 sideBarCols.map((sideBarCol) => (
-                                    <SideBarTasks sideBarCol={sideBarCol} setActive={setActive} setActiveCol={setActiveCol} onDrop={onDrop} />
+                                    <SideBarTasks sideBarCol={sideBarCol} setActive={setActive} setActiveCol={setActiveCol} active={active} activecol={activeCol} onDrop={onDrop} />
                                 ))
                             }
                         </div>

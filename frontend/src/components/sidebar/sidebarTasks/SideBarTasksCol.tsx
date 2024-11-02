@@ -11,12 +11,14 @@ interface hash {
 
 interface SideBarTasksProps {
     sideBarCol: { id: number; title: string; hashes: hash[] };
+    active:number| null;
+    activecol:number|null;
     setActive: (id: number) => void;
-    onDrop: (colId: number, hashId: number,isfav:boolean) => void;
+    onDrop: (colId: number, hashId: number,activeCol:number|null,active:number|null) => void;
     setActiveCol: (colId: number) => void;
 }
 
-const SideBarTasks: React.FC<SideBarTasksProps> = ({ sideBarCol, setActive, onDrop, setActiveCol }) => {
+const SideBarTasks: React.FC<SideBarTasksProps> = ({ sideBarCol, setActive, onDrop, setActiveCol,active,activecol}) => {
 
     const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => e.preventDefault();
 
@@ -39,29 +41,26 @@ const SideBarTasks: React.FC<SideBarTasksProps> = ({ sideBarCol, setActive, onDr
                     <h1 className="font-[450] whitespace-nowrap overflow-hidden text-ellipsis select-none">{sideBarCol.title}</h1>
                 </div>
                 <div className="flex justify-center items-center gap-2">
-                    <button className="p-1 "><svg width="13" height="13"> <path fill="currentColor" fill-rule="evenodd" d="M6 6V.5a.5.5 0 0 1 1 0V6h5.5a.5.5 0 1 1 0 1H7v5.5a.5.5 0 1 1-1 0V7H.5a.5.5 0 0 1 0-1H6z"></path></svg></button>
+                    <button className="p-1 "><svg width="13" height="13"> <path fill="currentColor" fillRule="evenodd" d="M6 6V.5a.5.5 0 0 1 1 0V6h5.5a.5.5 0 1 1 0 1H7v5.5a.5.5 0 1 1-1 0V7H.5a.5.5 0 0 1 0-1H6z"></path></svg></button>
                     <button className="p-1" onClick={sideDown}><img src="chevron-down.svg" alt="" className="w-4 user-down-arrow" ref={downArrow} /></button>
                 </div>
             </motion.div>
             <div className="user-body" ref={userBody} onDragOver={handleDragOver}>
                 <DropIndicator onDrop={()=>{
                     console.log(sideBarCol.hashes[0].isfav);
-                    onDrop(sideBarCol.id,0,sideBarCol.hashes[0].isfav)}}/>
+                    onDrop(sideBarCol.id,0,active,activecol)}}/>
                     {
                         sideBarCol.hashes.map((hash: hash) => (
-                            <React.Fragment key={hash.id}>
-                            <SideBarTask title={hash.title} id={hash.id} column={sideBarCol.id} setActive={setActive} setActiveCol={setActiveCol}/> 
+                            <div key={hash.id}>
+                            <SideBarTask title={hash.title} id={hash.id} column={sideBarCol.id}  setActive={setActive} setActiveCol={setActiveCol}/> 
                             <DropIndicator onDrop={()=>{
-                                if(sideBarCol.hashes[hash.id]){
-                                onDrop(sideBarCol.id,hash.id+1,sideBarCol.hashes[hash.id].isfav)}
+                                if(sideBarCol.hashes[hash.id+1]){
+                                onDrop(sideBarCol.id,hash.id+1,active,activecol)}
                             else{
-                                onDrop(sideBarCol.id,hash.id+1,false)
+                                onDrop(sideBarCol.id,hash.id+1,active,activecol)
                             }
                             }}/>
-                            
-                            
-                        
-                            </React.Fragment>
+                            </div>
                             )
                         )
                     }
